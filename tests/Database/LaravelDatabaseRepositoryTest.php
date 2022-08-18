@@ -512,7 +512,7 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
 
     protected static $num = 1;
 
-    private function generateModuleName()
+    private function generateModuleName(): string
     {
         return 'Blog' . time() . ++self::$num;
     }

@@ -211,7 +211,7 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
         return $this->findOrFail($module);
     }
 
-    public function migrateFileToDatabase($forceUpdate = false)
+    public function migrateFileToDatabase($forceUpdate = false): array
     {
         $paths = $this->getScanPaths();
         $modules = [];
@@ -261,7 +261,7 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
      *
      * @return array
      */
-    protected function validateAttributes(array $attributes, array $allows = [])
+    protected function validateAttributes(array $attributes, array $allows = []): array
     {
         if (empty($allows)) {
             $allows = $this->getModel()->getFillable();
