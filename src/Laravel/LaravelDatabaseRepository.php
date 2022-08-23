@@ -226,8 +226,10 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
                 $data = $json->getAttributes();
                 $data['path'] = str_replace('module.json', '', $json->getPath());
                 if (!isset($data['version'])) {
-                    $data['version'] = '1.0.0';
+                    $data['version'] = $this->config('default_version');
                 }
+
+                /** @var DatabaseModule|null $module */
                 $module = $this->find($data['name']);
                 $data = $this->validateAttributes($data);
                 if (!$module) {
@@ -250,7 +252,25 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
 
     public function update($name)
     {
-        return $this->findOrFail($name)->update(new Updater($this));
+        $module =  $this->findOrFail($name);
+        $updater = new Updater($this);
+        if ($this->config('database_management.update_file_to_database_when_updating')) {
+            $json = Json::make($this->getPath() . '/' . 'module.json');
+            $data = $json->getAttributes();
+
+            if (!isset($data['version'])) {
+                $data['version'] = $this->config('default_version');
+            }
+
+            // Check version, if version is higher then update module.json into database.
+            if (version_compare($module->getVersion(), $data['version'], '<=')) {
+                $data = $updater->getModule()->validateAttributes($data);
+                $this->getModel()->where(['name' => $data['name']])->update($data);
+            }
+        }
+
+        with($updater)->update($module->getName());
+        $module->flushCache();
     }
 
     /**
