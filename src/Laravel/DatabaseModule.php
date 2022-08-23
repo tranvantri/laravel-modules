@@ -147,6 +147,6 @@ class DatabaseModule extends Module
      */
     public function getVersion()
     {
-        return $this->get('version', self::DEFAULT_VERSION);
+        return $this->get('version', config('modules.default_version'));
     }
 }
