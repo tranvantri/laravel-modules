@@ -255,7 +255,7 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
         $module =  $this->findOrFail($name);
         $updater = new Updater($this);
         if ($this->config('database_management.update_file_to_database_when_updating')) {
-            $json = Json::make($this->getPath() . '/' . 'module.json');
+            $json = Json::make($this->getPath() . DIRECTORY_SEPARATOR . 'module.json');
             $data = $json->getAttributes();
 
             if (!isset($data['version'])) {
