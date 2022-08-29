@@ -497,7 +497,47 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
         $this->assertEquals($test_2, $module->get('test_2'));
     }
 
-    private function createModule($moduleName, $isActive = 1, $version = '1.0.0'): ModuleEntity
+    /** @test */
+    public function it_can_be_order()
+    {
+        $this->fileRepository->addLocation(__DIR__ . '/../stubs/valid');
+        $this->createModule('Recipe', true, '1.0.0', 1);
+        $this->createModule('Requirement', true, '1.0.0', 2);
+
+        $modules = $this->repository->getOrdered();
+        $this->assertCount(2, $modules);
+        $moduleNames = array_keys($modules);
+        $this->assertEquals('Recipe', $moduleNames[0]);
+        $this->assertEquals('Requirement', $moduleNames[1]);
+    }
+
+    /** @test */
+    public function it_can_be_order_desc()
+    {
+        $this->fileRepository->addLocation(__DIR__ . '/../stubs/valid');
+        $this->createModule('Recipe', true, '1.0.0', 1);
+        $this->createModule('Requirement', true, '1.0.0', 2);
+
+        $modules = $this->repository->getOrdered('desc');
+        $this->assertCount(2, $modules);
+        $moduleNames = array_keys($modules);
+        $this->assertEquals('Requirement', $moduleNames[0]);
+        $this->assertEquals('Recipe', $moduleNames[1]);
+    }
+
+//    /** @test */
+//    public function it_can_be_update_by_artisan()
+//    {
+//        $this->fileRepository->addLocation(__DIR__ . '/../stubs/valid');
+//        $oldVersion = '0.1';
+//        $module = $this->createModule('Recipe', true, $oldVersion);
+//        Artisan::call('module:update', [
+//            'module' => $module->name,
+//        ]);
+//        $this->assertEquals('0.1', $module->refresh()->version);
+//    }
+
+    private function createModule($moduleName, $isActive = 1, $version = '1.0.0', $priority = 0): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
         $moduleEntity->name = $moduleName;
@@ -505,6 +545,7 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
         $moduleEntity->path = __DIR__ . "/../stubs/valid/{$moduleName}";
         $moduleEntity->is_active = $isActive;
         $moduleEntity->version = $version;
+        $moduleEntity->priority = $priority;
         $moduleEntity->save();
 
         return $moduleEntity;
@@ -512,7 +553,7 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
 
     protected static $num = 1;
 
-    private function generateModuleName()
+    private function generateModuleName(): string
     {
         return 'Blog' . time() . ++self::$num;
     }

@@ -38,7 +38,7 @@ class ModuleEntity extends Model
         'aliases',
         'files',
         'requires',
-        'priority'
+        'priority',
     ];
 
     /**

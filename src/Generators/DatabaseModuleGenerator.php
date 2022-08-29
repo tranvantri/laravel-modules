@@ -56,15 +56,6 @@ class DatabaseModuleGenerator extends ModuleGenerator
             }
             $this->module->getModel()->create($data);
 
-            // Check when folder exists, just remove it.
-            if (File::isDirectory($data['path'])) {
-                if ($this->force) {
-                    (new Filesystem())->deleteDirectory($data['path']);
-                } else {
-                    abort(400, "Directory exists.");
-                }
-            }
-
             $this->generateFolders();
 
             $this->generateModuleJsonFile();
